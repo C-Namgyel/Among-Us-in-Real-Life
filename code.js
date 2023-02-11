@@ -37,7 +37,6 @@ function message(placeHolder, enableSeconds, id) {
     div.appendChild(ok)
     document.body.appendChild(div)
     div.style.top = (((window.getComputedStyle(document.body).height).slice(0,this.length - 2) / 2) - (div.clientHeight / 2)) + "px"
-    document.getElementById("barrier2").hidden = false;
     if (enableSeconds < 0) {
         ok.hidden = true;
     } else if (enableSeconds == 0) {
@@ -58,18 +57,17 @@ function message(placeHolder, enableSeconds, id) {
     }
     ok.onclick = function() {
         div.remove()
-        document.getElementById("barrier2").hidden = true;
     }
 }
 var username = prompt("Enter your username")
 document.getElementById("btn").onclick = function() {
-  alert("Emergency Meeting Calling")
+  message("Emergency Meeting Calling", 0)
   createRecord("game", {game: username}, function(record, success) {
-    alert("Emergency Meeting Called")
+    message("Emergency Meeting Called", 0)
   });
 }
 onRecordEvent("game", function(record, eventType) {
-    message(record.username + " Called the meeting")
+    message(record.game + " Called the meeting")
     sound('assets/emergency.mp3')
     navigator.vibrate(1000)
 });
