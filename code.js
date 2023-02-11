@@ -11,5 +11,5 @@ document.getElementById("btn").onclick = function() {
 }
 onRecordEvent("game", function(record, eventType) {
     sound('assets/emergency.mp3')
-    alert("Emergency Meeting!")
+    navigator.vibrate(1000)
 });
