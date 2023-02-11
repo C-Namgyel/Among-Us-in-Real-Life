@@ -5,16 +5,11 @@ function sound(sound) {
 } 
 document.getElementById("btn").onclick = function() {
   alert("Emergency Meeting Calling")
-  updateRecord("game", {id:1, game:true}, function(record, success) {
+  createRecord("game", {game:true}, function(record, success) {
     alert("Emergency Meeting Called")
   });
 }
 onRecordEvent("game", function(record, eventType) {
-  if (eventType === 'update' && record.game == true) {
     sound('assets/emergency.mp3')
-    setTimeout(function() {
-      updateRecord("game", {id:1, game:false}, function(record, success) {
-      });
-    })
-  }
+    alert("Emergency Meeting!")
 });
