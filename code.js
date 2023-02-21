@@ -4,9 +4,7 @@ function sound(sound) {
   aud.play();
 }
 function message(placeHolder, enableSeconds, id) {
-
     let div = document.createElement("div")
-
     div.style.width = "65%"
     div.style.position = "fixed"
     div.style.top = "0%"
@@ -39,7 +37,7 @@ function message(placeHolder, enableSeconds, id) {
     div.style.top = (((window.getComputedStyle(document.body).height).slice(0,this.length - 2) / 2) - (div.clientHeight / 2)) + "px"
     if (enableSeconds < 0) {
         ok.hidden = true;
-    } else if (enableSeconds == 0) {
+    } else if (enableSeconds == 0 || enableSeconds == undefined) {
         ok.innerHTML = "OK"
         ok.hidden = false;
         ok.disabled = false;
@@ -60,14 +58,35 @@ function message(placeHolder, enableSeconds, id) {
     }
 }
 var username = prompt("Enter your username")
+var time = 600
+document.getElementById("start").onclick = function() {
+    document.getElementById("start").disabled = true
+    let timer = setInterval(function() {
+        time -= 1;
+        document.getElementById("start").innerHTML = time
+        if (time <= 0) {
+            clearInterval(timer)
+            time = 600
+            document.getElementById("start").disabled = false
+            document.getElementById("start").innerHTML = "Start"
+            navigator.vibrate(10000)
+        }
+    }, 1000)
+}
 document.getElementById("btn").onclick = function() {
+  document.getElementById("btn").disabled = true;
   message("Emergency Meeting Calling", 0)
+  sound('assets/emergency.mp3')
+  navigator.vibrate(1000)
   createRecord("game", {game: username}, function(record, success) {
-    message("Emergency Meeting Called", 0)
+      message("Emergency Meeting Called", 0)
+      document.getElementById("btn").disabled = false;
   });
 }
 onRecordEvent("game", function(record, eventType) {
-    message(record.game + " Called the meeting")
-    sound('assets/emergency.mp3')
-    navigator.vibrate(1000)
+    if (record.game != username && start == true) {
+        message(record.game + " called the meeting")
+        sound('assets/emergency.mp3')
+        navigator.vibrate(1000)
+    }
 });
