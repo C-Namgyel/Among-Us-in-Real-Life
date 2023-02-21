@@ -74,6 +74,10 @@ document.getElementById("start").onclick = function() {
     }, 1000)
 }
 document.getElementById("btn").onclick = function() {
+    document.getElementById("btn").disabled = true;
+    setTimeout(function() {
+        document.getElementById("btn").disabled = false;
+    }, 10000)
   document.getElementById("btn").disabled = true;
   message("Emergency Meeting Calling", 0)
   sound('assets/emergency.mp3')
