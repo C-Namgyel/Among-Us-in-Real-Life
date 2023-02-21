@@ -88,7 +88,7 @@ document.getElementById("btn").onclick = function() {
   });
 }
 onRecordEvent("game", function(record, eventType) {
-    if (record.game != username && start == true) {
+    if (record.game != username) {
         message(record.game + " called the meeting")
         sound('assets/emergency.mp3')
         navigator.vibrate(1000)
