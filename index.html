@@ -3,14 +3,6 @@
     <title>Among Us in Real Life</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script src="jquery-1.12.1.min.js"></script>
-    <script>
-      function setExportConfig(config) { window.EXPORT_OPTIONS = config; }
-    </script>
-    <script src="https://studio.code.org/projects/applab/1KNP1CQv-OapGKpZtagMUKvzECWl7wlrMgHSL95i3h4/export_config?script_call=setExportConfig"></script>
-    <script src="applab/applab-api.js"></script>
-    <script src="jsapi.js"></script>
-    <link rel="stylesheet" href="style.css">
   </head>
   <body style="font-family: 'Times New Roman', Times, serif;">
         <div class="scrn" id="emergency" style="width: 100%">
@@ -18,4 +10,133 @@
             <button id="start" style="position: fixed; width: 50%; top: 80%; left: 25%; background-color: red;">Start</button>
         </div>
   </body>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-analytics.js";
+    import { getDatabase, ref, onValue, set, remove, onChildAdded } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-database.js";
+    
+    //Firebase
+const firebaseConfig = {
+    apiKey: "AIzaSyAZWUXSXInFBL52ozPCyKieHe3TevDD4SA",
+    authDomain: "among-us-in-real-life-5b322.firebaseapp.com",
+    projectId: "among-us-in-real-life-5b322",
+    storageBucket: "among-us-in-real-life-5b322.appspot.com",
+    messagingSenderId: "946102663115",
+    appId: "1:946102663115:web:9edc6b6f37546db44ae84e",
+    measurementId: "G-RGEPYP8N1Y",
+    databaseURL: "https://among-us-in-real-life-5b322-default-rtdb.firebaseio.com/"
+};
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+const database = getDatabase();
+
+//Setup
+function sound(sound) {
+  let aud = document.createElement("audio")
+  aud.src = sound;
+  aud.play();
+}
+function message(placeHolder, enableSeconds, id) {
+    let div = document.createElement("div")
+    div.style.width = "65%"
+    div.style.position = "fixed"
+    div.style.top = "0%"
+    div.style.left = "12.5%"
+    div.style.borderStyle = "solid"
+    div.style.borderWidth ="1px"
+    div.style.borderRadius = "15px"
+    div.style.backgroundColor = "white"
+    div.style.zIndex = "99999"
+    div.style.padding ="5%"
+    let label = document.createElement("label")
+    label.innerHTML = placeHolder,
+    label.style.display = "inline-block"
+    label.style.width = "100%";
+    let ok = document.createElement("button");
+    ok.style.width = "25%"
+    ok.innerHTML = "OK (" + enableSeconds + "s)"
+    ok.style.float = "right"
+    ok.style.borderStyle = "none"
+    ok.style.backgroundColor = "white"
+    ok.disabled = true;
+    if (id != undefined) {
+        ok.id = id
+    }
+    div.appendChild(label)
+    div.appendChild(document.createElement("br"))
+    div.appendChild(document.createElement("br"))
+    div.appendChild(ok)
+    document.body.appendChild(div)
+    div.style.top = ((screen.height / 2) - (div.clientHeight / 2)) + "px"
+    if (enableSeconds < 0) {
+        ok.hidden = true;
+    } else if (enableSeconds == 0 || enableSeconds == undefined) {
+        ok.innerHTML = "OK"
+        ok.hidden = false;
+        ok.disabled = false;
+    } else {
+        let CDNum = enableSeconds;
+        let CD = setInterval(function() {
+            CDNum -= 1;
+            ok.innerHTML = "OK (" + CDNum + "s)"
+            if (CDNum <= 0) {
+                ok.disabled = false;
+                ok.innerHTML = "OK";
+                clearInterval(CD);
+            }
+        }, 1000)
+    }
+    ok.onclick = function() {
+        div.remove()
+    }
+}
+var username = prompt("Enter your username")
+var time = 600
+document.getElementById("start").onclick = function() {
+    document.getElementById("start").disabled = true
+    let timer = setInterval(function() {
+        time -= 1;
+        document.getElementById("start").innerHTML = time
+        if (time <= 0) {
+            clearInterval(timer)
+            time = 600
+            document.getElementById("start").disabled = false
+            document.getElementById("start").innerHTML = "Start"
+            navigator.vibrate(10000)
+        }
+    }, 1000)
+}
+document.getElementById("btn").onclick = function() {
+    document.getElementById("btn").disabled = true;
+    setTimeout(function() {
+        document.getElementById("btn").disabled = false;
+    }, 10000)
+    message("Emergency Meeting Calling", 0)
+    sound('assets/emergency.mp3')
+    navigator.vibrate(1000)
+    let timestamp = Date.now();
+    set(ref(database, "game/" + timestamp), {
+        game: username,
+        id: timestamp
+    });
+}
+const update = ref(database, "game/");
+onChildAdded(update, (snapshot) => {
+  let record = snapshot.val();
+  console.log(record)
+  if (record.game != username) {
+    message(record.game + " called the meeting")
+    sound('assets/emergency.mp3')
+    navigator.vibrate(1000)
+    document.getElementById("btn").disabled = true;
+    setTimeout(function() {
+        document.getElementById("btn").disabled = false;
+    }, 10000)
+  } else {
+    setTimeout(function() {
+        remove(ref(database, "game/"+record.id))
+    }, 1000)
+  }
+});
+  </script>
 </html>
